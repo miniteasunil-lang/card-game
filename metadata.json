@@ -1,0 +1,6 @@
+{
+  "name": "Imroz Score Board",
+  "description": "A elegant and modern score tracker for Card Games and Chess, with automatic winner calculations, move/round tracking, and historical logs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
