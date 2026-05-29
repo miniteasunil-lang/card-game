@@ -12,6 +12,30 @@ import kotlinx.coroutines.launch
 class ScoreBoardViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: GameRepository
 
+    // Theme Settings Management
+    private val sharedPrefs = application.getSharedPreferences("imroz_settings", android.content.Context.MODE_PRIVATE)
+    
+    private val _themeMode = MutableStateFlow(
+        run {
+            val saved = sharedPrefs.getString("theme_mode", null)
+            if (saved != null) {
+                try {
+                    com.example.ui.theme.ThemeMode.valueOf(saved)
+                } catch (e: Exception) {
+                    com.example.ui.theme.ThemeMode.SYSTEM
+                }
+            } else {
+                com.example.ui.theme.ThemeMode.SYSTEM
+            }
+        }
+    )
+    val themeMode: StateFlow<com.example.ui.theme.ThemeMode> = _themeMode
+
+    fun setThemeMode(mode: com.example.ui.theme.ThemeMode) {
+        _themeMode.value = mode
+        sharedPrefs.edit().putString("theme_mode", mode.name).apply()
+    }
+
     init {
         val gameDao = AppDatabase.getDatabase(application).gameDao()
         repository = GameRepository(gameDao)

@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -57,8 +58,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MyApplicationTheme {
-                MainAppHost()
+            val viewModel: ScoreBoardViewModel = viewModel()
+            val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
+            MyApplicationTheme(themeMode = themeMode) {
+                MainAppHost(viewModel)
             }
         }
     }
@@ -74,8 +77,7 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun MainAppHost() {
-    val viewModel: ScoreBoardViewModel = viewModel()
+fun MainAppHost(viewModel: ScoreBoardViewModel = viewModel()) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
     
     // Manage Scaffold inner contents
@@ -133,7 +135,7 @@ fun CustomBottomBar(
             .windowInsetsPadding(WindowInsets.navigationBars)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFFFFFFF)
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(24.dp)
@@ -346,9 +348,9 @@ fun HomeScreen(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(1.dp, Color(0xFFEEF5F7))
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
                 ) {
                     Box(
                         modifier = Modifier
@@ -395,8 +397,8 @@ fun GameSelectorButton(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(2.dp, Color(0xFFEEF5F7)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -471,8 +473,8 @@ fun HistoryItemRow(game: GameEntity) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(2.dp, Color(0xFFEEF5F7)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
@@ -573,8 +575,8 @@ fun ChessScreen(
             Card(
                 modifier = Modifier.fillMaxWidth().testTag("chess_setup_card"),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(2.dp, Color(0xFFEEF5F7)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.surfaceVariant),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
@@ -594,15 +596,20 @@ fun ChessScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             text = "Player 1 (White)",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(start = 4.dp)
                         )
                         OutlinedTextField(
                             value = p1Name,
                             onValueChange = { viewModel.setChessP1Name(it) },
-                            placeholder = { Text("Enter name") },
+                            placeholder = { Text("Enter name", fontSize = 15.sp) },
+                            textStyle = LocalTextStyle.current.copy(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
                             modifier = Modifier
                                 .testTag("chess_p1_input")
                                 .fillMaxWidth(),
@@ -619,15 +626,20 @@ fun ChessScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             text = "Player 2 (Black)",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.padding(start = 4.dp)
                         )
                         OutlinedTextField(
                             value = p2Name,
                             onValueChange = { viewModel.setChessP2Name(it) },
-                            placeholder = { Text("Enter name") },
+                            placeholder = { Text("Enter name", fontSize = 15.sp) },
+                            textStyle = LocalTextStyle.current.copy(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
                             modifier = Modifier
                                 .testTag("chess_p2_input")
                                 .fillMaxWidth(),
@@ -702,8 +714,8 @@ fun ChessScreen(
                         .testTag("match_active_recorder")
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(2.dp, Color(0xFFEEF5F7)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.surfaceVariant),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
@@ -819,16 +831,16 @@ fun ChessStatCard(
         ) {
             Text(
                 text = title,
-                fontSize = 14.sp,
+                fontSize = 15.sp,
                 color = textColor,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.ExtraBold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = value,
-                fontSize = 26.sp,
+                fontSize = 34.sp,
                 color = textColor,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.Black
             )
         }
     }
@@ -950,7 +962,7 @@ fun CardScreen(
                             onP1Change = { viewModel.setCardPlayer1(it) },
                             p2 = p2,
                             onP2Change = { viewModel.setCardPlayer2(it) },
-                            borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                            teamColor = MaterialTheme.colorScheme.primary,
                             playerLabel1 = "Player 1",
                             playerLabel2 = "Player 2"
                         )
@@ -965,7 +977,7 @@ fun CardScreen(
                             onP1Change = { viewModel.setCardPlayer3(it) },
                             p2 = p4,
                             onP2Change = { viewModel.setCardPlayer4(it) },
-                            borderColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
+                            teamColor = MaterialTheme.colorScheme.secondary,
                             playerLabel1 = "Player 3",
                             playerLabel2 = "Player 4"
                         )
@@ -1061,10 +1073,10 @@ fun CardScreen(
                 .fillMaxWidth()
                 .padding(bottom = 12.dp)
                 .padding(horizontal = 16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             shape = RoundedCornerShape(24.dp),
-            border = BorderStroke(1.dp, Color(0xFFE8EFF1))
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(
                 modifier = Modifier
@@ -1081,20 +1093,20 @@ fun CardScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "${t1Name.uppercase()} TOTAL",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = t1Total.toString(),
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 46.sp,
+                            fontWeight = FontWeight.Black,
                             color = MaterialTheme.colorScheme.primary
                         )
                         if (t1Total > t2Total) {
                             Text(
                                 text = "Winning",
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White,
                                 modifier = Modifier
@@ -1109,20 +1121,20 @@ fun CardScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "${t2Name.uppercase()} TOTAL",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
                             text = t2Total.toString(),
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 46.sp,
+                            fontWeight = FontWeight.Black,
                             color = MaterialTheme.colorScheme.secondary
                         )
                         if (t2Total > t1Total) {
                             Text(
                                 text = "Winning",
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White,
                                 modifier = Modifier
@@ -1165,15 +1177,15 @@ fun CardSetupBox(
     onP1Change: (String) -> Unit,
     p2: String,
     onP2Change: (String) -> Unit,
-    borderColor: Color,
+    teamColor: Color,
     playerLabel1: String,
     playerLabel2: String
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(2.dp, borderColor)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(2.dp, teamColor.copy(alpha = 0.3f))
     ) {
         Column(
             modifier = Modifier
@@ -1187,9 +1199,9 @@ fun CardSetupBox(
                 value = teamTitle,
                 onValueChange = onTeamTitleChange,
                 textStyle = LocalTextStyle.current.copy(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = borderColor,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = teamColor,
                     textAlign = TextAlign.Center
                 ),
                 singleLine = true,
@@ -1206,32 +1218,32 @@ fun CardSetupBox(
             OutlinedTextField(
                 value = p1,
                 onValueChange = onP1Change,
-                placeholder = { Text(playerLabel1, fontSize = 12.sp) },
+                placeholder = { Text(playerLabel1, fontSize = 15.sp, color = MaterialTheme.colorScheme.outline) },
                 singleLine = true,
-                textStyle = LocalTextStyle.current.copy(fontSize = 12.sp, textAlign = TextAlign.Center),
+                textStyle = LocalTextStyle.current.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp),
-                shape = RoundedCornerShape(8.dp),
+                    .height(56.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFFEEF5F7),
-                    unfocusedBorderColor = Color.Transparent
+                    focusedBorderColor = teamColor.copy(alpha = 0.5f),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             )
 
             OutlinedTextField(
                 value = p2,
                 onValueChange = onP2Change,
-                placeholder = { Text(playerLabel2, fontSize = 12.sp) },
+                placeholder = { Text(playerLabel2, fontSize = 15.sp, color = MaterialTheme.colorScheme.outline) },
                 singleLine = true,
-                textStyle = LocalTextStyle.current.copy(fontSize = 12.sp, textAlign = TextAlign.Center),
+                textStyle = LocalTextStyle.current.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp),
-                shape = RoundedCornerShape(8.dp),
+                    .height(56.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFFEEF5F7),
-                    unfocusedBorderColor = Color.Transparent
+                    focusedBorderColor = teamColor.copy(alpha = 0.5f),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             )
         }
@@ -1246,11 +1258,20 @@ fun RoundScoreAdjuster(
     onAdjust: (Int) -> Unit,
     btnColor: Color
 ) {
+    var textState by remember { mutableStateOf(if (value == 0) "" else value.toString()) }
+
+    LaunchedEffect(value) {
+        val currentParsed = textState.toIntOrNull() ?: 0
+        if (currentParsed != value) {
+            textState = if (value == 0) "" else value.toString()
+        }
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFC1C6D3).copy(alpha = 0.5f))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             modifier = Modifier
@@ -1261,7 +1282,7 @@ fun RoundScoreAdjuster(
         ) {
             Text(
                 text = "ROUND $roundNumber",
-                fontSize = 11.sp,
+                fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Bold
             )
@@ -1276,7 +1297,7 @@ fun RoundScoreAdjuster(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFEEF5F7))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .clickable { onAdjust(-10) },
                     contentAlignment = Alignment.Center
                 ) {
@@ -1289,26 +1310,51 @@ fun RoundScoreAdjuster(
                 }
                 
                 // score text display
-                OutlinedTextField(
-                    value = value.toString(),
-                    onValueChange = {
-                        val parsed = it.toIntOrNull() ?: 0
-                        onValueChange(parsed)
+                BasicTextField(
+                    value = textState,
+                    onValueChange = { newValue ->
+                        if (newValue.isEmpty() || newValue == "-" || newValue.all { it.isDigit() || it == '-' }) {
+                            textState = newValue
+                            val parsed = newValue.toIntOrNull()
+                            if (parsed != null) {
+                                onValueChange(parsed)
+                            } else if (newValue.isEmpty() || newValue == "-") {
+                                onValueChange(0)
+                            }
+                        }
                     },
                     textStyle = LocalTextStyle.current.copy(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface
                     ),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier
-                        .width(48.dp)
-                        .height(44.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent
-                    )
+                        .width(54.dp)
+                        .height(36.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            shape = RoundedCornerShape(8.dp)
+                        ),
+                    decorationBox = { innerTextField ->
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            if (textState.isEmpty()) {
+                                Text(
+                                    text = "0",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
                 )
 
                 // +10 Button
@@ -1414,8 +1460,8 @@ fun HistoryScreen(viewModel: ScoreBoardViewModel) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = BorderStroke(2.dp, Color(0xFFEEF5F7)),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.surfaceVariant),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(
@@ -1497,6 +1543,7 @@ fun HistoryScreen(viewModel: ScoreBoardViewModel) {
 // ----------------------------------------------------
 @Composable
 fun SettingsScreen(viewModel: ScoreBoardViewModel) {
+    val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
     
     if (showDialog) {
@@ -1542,9 +1589,78 @@ fun SettingsScreen(viewModel: ScoreBoardViewModel) {
             modifier = Modifier.padding(top = 2.dp, bottom = 12.dp)
         )
         
-        HorizontalDivider(color = Color(0xFFE8EFF1))
+        HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
         
         Spacer(modifier = Modifier.height(16.dp))
+        
+        // Appearance Theme Mode Card Switcher
+        Text(
+            text = "Appearance Mode",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf(
+                    com.example.ui.theme.ThemeMode.SYSTEM to "System",
+                    com.example.ui.theme.ThemeMode.LIGHT to "Light",
+                    com.example.ui.theme.ThemeMode.DARK to "Dark"
+                ).forEach { (mode, label) ->
+                    val isSelected = themeMode == mode
+                    val containerColor = if (isSelected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    }
+                    val contentColor = if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                    
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(40.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(containerColor)
+                            .clickable { viewModel.setThemeMode(mode) }
+                            .padding(vertical = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = label,
+                            fontSize = 13.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = contentColor
+                        )
+                    }
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(20.dp))
+        
+        Text(
+            text = "Data Management",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
         
         // Option 1: Clean History
         SettingsRowItem(
@@ -1555,13 +1671,22 @@ fun SettingsScreen(viewModel: ScoreBoardViewModel) {
             onClick = { showDialog = true }
         )
         
+        Spacer(modifier = Modifier.height(20.dp))
+        
+        Text(
+            text = "Info",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        
         // Option 2: App details
-        Spacer(modifier = Modifier.height(12.dp))
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            border = BorderStroke(2.dp, Color(0xFFEEF5F7))
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(
                 modifier = Modifier
@@ -1605,8 +1730,8 @@ fun SettingsRowItem(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFEEF5F7))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Row(
             modifier = Modifier

@@ -11,11 +11,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
+enum class ThemeMode {
+    SYSTEM, LIGHT, DARK
+}
+
 private val DarkColorScheme = darkColorScheme(
     primary = LogoBlueDark,
     secondary = SecondaryGreenDark,
     background = BackgroundDark,
-    surface = SurfaceDark,
+    surface = SurfaceContainerLowestDark,
+    surfaceVariant = SurfaceContainerDark,
     onBackground = Color.White,
     onSurface = Color.White,
     onSurfaceVariant = Color(0xFFC1C6D3)
@@ -29,7 +34,7 @@ private val LightColorScheme = lightColorScheme(
     tertiary = WarmTertiary,
     onTertiary = Color.White,
     background = BackgroundLight,
-    surface = SurfaceLight,
+    surface = Color.White,
     surfaceVariant = SurfaceContainerLow,
     onBackground = TextOnSurface,
     onSurface = TextOnSurface,
@@ -46,7 +51,12 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun MyApplicationTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
+    darkTheme: Boolean = when (themeMode) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    },
     // Allow turning off dynamic color to maintain design fidelity
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
